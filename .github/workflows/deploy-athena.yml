@@ -1,0 +1,94 @@
+name: Deploy Athena CDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      tenant:
+        description: "Tenant name (must exist in config.yaml)"
+        required: true
+        type: string
+      env:
+        description: "Environment name (must exist in config.yaml)"
+        required: true
+        type: string
+
+jobs:
+  prechecks:
+    runs-on: ubuntu-latest
+    env:
+      WORKING_DIR: athena
+      PYTHON_VERSION: 3.11
+      CDK_VERSION: 2.90.0
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+          npm install -g aws-cdk@${{ env.CDK_VERSION }}
+
+      - name: Validate tenant/env in config.yaml
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          pip install pyyaml
+          python - <<'EOF'
+          import sys, yaml
+          tenant = "${{ github.event.inputs.tenant }}"
+          env = "${{ github.event.inputs.env }}"
+          with open("config.yaml") as f:
+              config = yaml.safe_load(f)
+          if tenant not in config:
+              print(f"ERROR: tenant '{tenant}' not found in config.yaml")
+              sys.exit(1)
+          if env not in config[tenant]:
+              print(f"ERROR: env '{env}' not found for tenant '{tenant}' in config.yaml")
+              sys.exit(1)
+          print(f"✅ tenant={tenant}, env={env} exists in config.yaml")
+          EOF
+
+      - name: CDK Synth (compile check)
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          cdk synth \
+          -c tenant=${{ github.event.inputs.tenant }} \
+          -c env=${{ github.event.inputs.env }}
+
+      - name: CDK Diff (preview changes)
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          cdk diff \
+          -c tenant=${{ github.event.inputs.tenant }} \
+          -c env=${{ github.event.inputs.env }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: prechecks   # only runs if prechecks pass
+    env:
+      WORKING_DIR: athena
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy CDK stack
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          cdk deploy \
+          -c tenant=${{ github.event.inputs.tenant }} \
+          -c env=${{ github.event.inputs.env }} \
+          --require-approval never
