@@ -8,17 +8,16 @@ on:
         required: true
         type: string
       env:
-        description: "Environment name (must exist in config.yaml)"
+        description: "Environment (e.g., dev, prod)"
         required: true
         type: string
 
 jobs:
-  prechecks:
+  deploy-athena:
     runs-on: ubuntu-latest
     env:
       WORKING_DIR: athena
       PYTHON_VERSION: 3.11
-      CDK_VERSION: 2.90.0
 
     steps:
       - uses: actions/checkout@v3
@@ -28,64 +27,59 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-          npm install -g aws-cdk@${{ env.CDK_VERSION }}
 
-      - name: Validate tenant/env in config.yaml
+      # ✅ Validate tenant/env exist in config.yaml
+      - name: Validate config.yaml
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          pip install pyyaml
-          python - <<'EOF'
-          import sys, yaml
+          python - <<EOF
+          import yaml, sys
           tenant = "${{ github.event.inputs.tenant }}"
           env = "${{ github.event.inputs.env }}"
           with open("config.yaml") as f:
               config = yaml.safe_load(f)
           if tenant not in config:
-              print(f"ERROR: tenant '{tenant}' not found in config.yaml")
-              sys.exit(1)
+              sys.exit(f"❌ Tenant '{tenant}' not found in config.yaml")
           if env not in config[tenant]:
-              print(f"ERROR: env '{env}' not found for tenant '{tenant}' in config.yaml")
-              sys.exit(1)
-          print(f"✅ tenant={tenant}, env={env} exists in config.yaml")
+              sys.exit(f"❌ Env '{env}' not found under tenant '{tenant}' in config.yaml")
+          print(f"✅ Tenant '{tenant}', Env '{env}' validated in config.yaml")
           EOF
 
-      - name: CDK Synth (compile check)
+      # 🔎 Detect CDK version from requirements.txt
+      - name: Detect CDK version
+        id: detect_cdk
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          VERSION=$(grep -E '^aws-cdk-lib' requirements.txt | cut -d'=' -f3)
+          echo "Detected aws-cdk-lib version: $VERSION"
+          echo "cdk_version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Install CDK CLI
+        run: npm install -g aws-cdk@${{ steps.detect_cdk.outputs.cdk_version }}
+
+      # ✅ Pre-checks
+      - name: CDK Synth
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           cdk synth \
           -c tenant=${{ github.event.inputs.tenant }} \
           -c env=${{ github.event.inputs.env }}
 
-      - name: CDK Diff (preview changes)
+      - name: CDK Diff
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           cdk diff \
           -c tenant=${{ github.event.inputs.tenant }} \
           -c env=${{ github.event.inputs.env }}
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: prechecks   # only runs if prechecks pass
-    env:
-      WORKING_DIR: athena
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Deploy CDK stack
+      # 🚀 Deploy
+      - name: Deploy CDK Stack
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           cdk deploy \
