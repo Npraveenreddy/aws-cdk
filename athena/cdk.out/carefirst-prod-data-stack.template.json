@@ -1,0 +1,115 @@
+{
+ "Resources": {
+  "DataBucketE3889A50": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketName": "carefirst-prod-data-stack-bucket-prod",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "prod"
+     },
+     {
+      "Key": "Owner",
+      "Value": "prod-team"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "carefirst-prod-data-stack/DataBucket/Resource"
+   }
+  },
+  "GlueDatabase": {
+   "Type": "AWS::Glue::Database",
+   "Properties": {
+    "CatalogId": "375299851423",
+    "DatabaseInput": {
+     "Name": "carefirst_prod_db"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-prod-data-stack/GlueDatabase"
+   }
+  },
+  "AthenaWorkgroup": {
+   "Type": "AWS::Athena::WorkGroup",
+   "Properties": {
+    "Name": "carefirst_prod_workgroup",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "prod"
+     },
+     {
+      "Key": "Owner",
+      "Value": "prod-team"
+     }
+    ],
+    "WorkGroupConfiguration": {
+     "ResultConfiguration": {
+      "OutputLocation": {
+       "Fn::Join": [
+        "",
+        [
+         "s3://",
+         {
+          "Ref": "DataBucketE3889A50"
+         },
+         "/athena-results/"
+        ]
+       ]
+      }
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-prod-data-stack/AthenaWorkgroup"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yWJvQrCMBgAn6UZJfmsySKOVnAT0cFBRL7E1Ma0qeSHIiHvLtrpjjsOvF5DXeEUmHpY1hsJ+RxRWYpTuOcgIG+TsjpeM5F/OeCgyYYsSLnRpnXzLfTZJw1N63YYUWLQFGOnHf7SZfR278f0LoUeP7Eb3VLAioOoXsEY5pOLZtBwmvkFBL+aMJMAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-prod-data-stack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

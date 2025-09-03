@@ -1,0 +1,21 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "2cb1e51ddf540f799a8672ae010dcca5cb4d8a6485701465bf0f2e045572be68": {
+      "displayName": "carefirst-prod-data-stack Template",
+      "source": {
+        "path": "carefirst-prod-data-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "375299851423-us-east-2-be352393": {
+          "bucketName": "cdk-hnb659fds-assets-375299851423-us-east-2",
+          "objectKey": "2cb1e51ddf540f799a8672ae010dcca5cb4d8a6485701465bf0f2e045572be68.json",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::375299851423:role/cdk-hnb659fds-file-publishing-role-375299851423-us-east-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

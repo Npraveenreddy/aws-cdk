@@ -1,0 +1,1131 @@
+{
+ "Resources": {
+  "carefirstdevvpc897DC2B4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.10.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/Resource"
+   }
+  },
+  "carefirstdevvpcPublicASubnet1Subnet6DC75C1D": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.10.0.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "PublicA"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicASubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicASubnet1/Subnet"
+   }
+  },
+  "carefirstdevvpcPublicASubnet1RouteTable5AE24B0D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicASubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicASubnet1/RouteTable"
+   }
+  },
+  "carefirstdevvpcPublicASubnet1RouteTableAssociation0218C640": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "carefirstdevvpcPublicASubnet1RouteTable5AE24B0D"
+    },
+    "SubnetId": {
+     "Ref": "carefirstdevvpcPublicASubnet1Subnet6DC75C1D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicASubnet1/RouteTableAssociation"
+   }
+  },
+  "carefirstdevvpcPublicASubnet1DefaultRoute6C7C7F25": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "carefirstdevvpcIGWD63BADA1"
+    },
+    "RouteTableId": {
+     "Ref": "carefirstdevvpcPublicASubnet1RouteTable5AE24B0D"
+    }
+   },
+   "DependsOn": [
+    "carefirstdevvpcVPCGWC2DEE2D8"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicASubnet1/DefaultRoute"
+   }
+  },
+  "carefirstdevvpcPublicASubnet2Subnet43BF5103": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1b",
+    "CidrBlock": "10.10.1.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "PublicA"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicASubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicASubnet2/Subnet"
+   }
+  },
+  "carefirstdevvpcPublicASubnet2RouteTable71C827E7": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicASubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicASubnet2/RouteTable"
+   }
+  },
+  "carefirstdevvpcPublicASubnet2RouteTableAssociationDEEACE25": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "carefirstdevvpcPublicASubnet2RouteTable71C827E7"
+    },
+    "SubnetId": {
+     "Ref": "carefirstdevvpcPublicASubnet2Subnet43BF5103"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicASubnet2/RouteTableAssociation"
+   }
+  },
+  "carefirstdevvpcPublicASubnet2DefaultRouteB94C2737": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "carefirstdevvpcIGWD63BADA1"
+    },
+    "RouteTableId": {
+     "Ref": "carefirstdevvpcPublicASubnet2RouteTable71C827E7"
+    }
+   },
+   "DependsOn": [
+    "carefirstdevvpcVPCGWC2DEE2D8"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicASubnet2/DefaultRoute"
+   }
+  },
+  "carefirstdevvpcPublicBSubnet1SubnetAFBD1FEF": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.10.2.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "PublicB"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicBSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicBSubnet1/Subnet"
+   }
+  },
+  "carefirstdevvpcPublicBSubnet1RouteTableA248618D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicBSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicBSubnet1/RouteTable"
+   }
+  },
+  "carefirstdevvpcPublicBSubnet1RouteTableAssociation932E9C7A": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "carefirstdevvpcPublicBSubnet1RouteTableA248618D"
+    },
+    "SubnetId": {
+     "Ref": "carefirstdevvpcPublicBSubnet1SubnetAFBD1FEF"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicBSubnet1/RouteTableAssociation"
+   }
+  },
+  "carefirstdevvpcPublicBSubnet1DefaultRoute8B5636DC": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "carefirstdevvpcIGWD63BADA1"
+    },
+    "RouteTableId": {
+     "Ref": "carefirstdevvpcPublicBSubnet1RouteTableA248618D"
+    }
+   },
+   "DependsOn": [
+    "carefirstdevvpcVPCGWC2DEE2D8"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicBSubnet1/DefaultRoute"
+   }
+  },
+  "carefirstdevvpcPublicBSubnet2Subnet91DB3659": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1b",
+    "CidrBlock": "10.10.3.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "PublicB"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicBSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicBSubnet2/Subnet"
+   }
+  },
+  "carefirstdevvpcPublicBSubnet2RouteTable56D5013E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicBSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicBSubnet2/RouteTable"
+   }
+  },
+  "carefirstdevvpcPublicBSubnet2RouteTableAssociation6B57BBFF": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "carefirstdevvpcPublicBSubnet2RouteTable56D5013E"
+    },
+    "SubnetId": {
+     "Ref": "carefirstdevvpcPublicBSubnet2Subnet91DB3659"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicBSubnet2/RouteTableAssociation"
+   }
+  },
+  "carefirstdevvpcPublicBSubnet2DefaultRoute919CB09C": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "carefirstdevvpcIGWD63BADA1"
+    },
+    "RouteTableId": {
+     "Ref": "carefirstdevvpcPublicBSubnet2RouteTable56D5013E"
+    }
+   },
+   "DependsOn": [
+    "carefirstdevvpcVPCGWC2DEE2D8"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PublicBSubnet2/DefaultRoute"
+   }
+  },
+  "carefirstdevvpcPrivateASubnet1Subnet994B50D7": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.10.4.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "PrivateA"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateASubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateASubnet1/Subnet"
+   }
+  },
+  "carefirstdevvpcPrivateASubnet1RouteTableE70A0B8F": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateASubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateASubnet1/RouteTable"
+   }
+  },
+  "carefirstdevvpcPrivateASubnet1RouteTableAssociation52450494": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "carefirstdevvpcPrivateASubnet1RouteTableE70A0B8F"
+    },
+    "SubnetId": {
+     "Ref": "carefirstdevvpcPrivateASubnet1Subnet994B50D7"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateASubnet1/RouteTableAssociation"
+   }
+  },
+  "carefirstdevvpcPrivateASubnet2Subnet5A3C2731": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1b",
+    "CidrBlock": "10.10.5.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "PrivateA"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateASubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateASubnet2/Subnet"
+   }
+  },
+  "carefirstdevvpcPrivateASubnet2RouteTableD35AF1F8": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateASubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateASubnet2/RouteTable"
+   }
+  },
+  "carefirstdevvpcPrivateASubnet2RouteTableAssociation52AAB04F": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "carefirstdevvpcPrivateASubnet2RouteTableD35AF1F8"
+    },
+    "SubnetId": {
+     "Ref": "carefirstdevvpcPrivateASubnet2Subnet5A3C2731"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateASubnet2/RouteTableAssociation"
+   }
+  },
+  "carefirstdevvpcPrivateBSubnet1Subnet41F3B77D": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "CidrBlock": "10.10.6.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "PrivateB"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateBSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateBSubnet1/Subnet"
+   }
+  },
+  "carefirstdevvpcPrivateBSubnet1RouteTable7D19DFE1": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateBSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateBSubnet1/RouteTable"
+   }
+  },
+  "carefirstdevvpcPrivateBSubnet1RouteTableAssociationFAEC1A11": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "carefirstdevvpcPrivateBSubnet1RouteTable7D19DFE1"
+    },
+    "SubnetId": {
+     "Ref": "carefirstdevvpcPrivateBSubnet1Subnet41F3B77D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateBSubnet1/RouteTableAssociation"
+   }
+  },
+  "carefirstdevvpcPrivateBSubnet2SubnetDBA4AB36": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-1b",
+    "CidrBlock": "10.10.7.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "PrivateB"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateBSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateBSubnet2/Subnet"
+   }
+  },
+  "carefirstdevvpcPrivateBSubnet2RouteTable3CAB2C14": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateBSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateBSubnet2/RouteTable"
+   }
+  },
+  "carefirstdevvpcPrivateBSubnet2RouteTableAssociation9608A1DB": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "carefirstdevvpcPrivateBSubnet2RouteTable3CAB2C14"
+    },
+    "SubnetId": {
+     "Ref": "carefirstdevvpcPrivateBSubnet2SubnetDBA4AB36"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/PrivateBSubnet2/RouteTableAssociation"
+   }
+  },
+  "carefirstdevvpcIGWD63BADA1": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/IGW"
+   }
+  },
+  "carefirstdevvpcVPCGWC2DEE2D8": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "carefirstdevvpcIGWD63BADA1"
+    },
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/VPCGW"
+   }
+  },
+  "carefirstdevvpcRestrictDefaultSecurityGroupCustomResourceBF6FE8CA": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "carefirstdevvpc897DC2B4",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": "375299851423"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-vpc/RestrictDefaultSecurityGroupCustomResource/Default"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ec2:us-east-1:375299851423:security-group/",
+             {
+              "Fn::GetAtt": [
+               "carefirstdevvpc897DC2B4",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role"
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-375299851423-us-east-1",
+     "S3Key": "7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200",
+    "aws:asset:property": "Code"
+   }
+  },
+  "carefirstdevsg611885DA": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Redshift security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow Redshift access",
+      "FromPort": 5439,
+      "IpProtocol": "tcp",
+      "ToPort": 5439
+     }
+    ],
+    "VpcId": {
+     "Ref": "carefirstdevvpc897DC2B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-sg/Resource"
+   }
+  },
+  "carefirstdevroleEE2F6C8D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "redshift.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonRedshiftAllCommandsFullAccess"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonS3ReadOnlyAccess"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/SecretsManagerReadWrite"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-role/Resource"
+   }
+  },
+  "carefirstdevroleDefaultPolicyAD17D1C3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "carefirstdevsalesbucket452FFB1A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "carefirstdevsalesbucket452FFB1A",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "carefirstdevroleDefaultPolicyAD17D1C3",
+    "Roles": [
+     {
+      "Ref": "carefirstdevroleEE2F6C8D"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-role/DefaultPolicy/Resource"
+   }
+  },
+  "carefirstdevsalesbucket452FFB1A": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketName": "carefirst-dev-redshift-data",
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-sales-bucket/Resource"
+   }
+  },
+  "carefirstdevsalesbucketPolicyED0B169D": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "carefirstdevsalesbucket452FFB1A"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "carefirstdevsalesbucket452FFB1A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "carefirstdevsalesbucket452FFB1A",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-sales-bucket/Policy/Resource"
+   }
+  },
+  "carefirstdevsalesbucketAutoDeleteObjectsCustomResource0FDEEEC0": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "carefirstdevsalesbucket452FFB1A"
+    }
+   },
+   "DependsOn": [
+    "carefirstdevsalesbucketPolicyED0B169D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-sales-bucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-375299851423-us-east-1",
+     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "carefirstdevsalesbucket452FFB1A"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+    "aws:asset:property": "Code"
+   }
+  },
+  "carefirstdevsecret03D91C0F": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Name": "carefirst-dev-redshift-secret",
+    "SecretString": "{\"username\":\"admin\",\"password\":\"YourStrongPassword123!\",\"engine\":\"redshift\",\"host\":\"placeholder-host\",\"port\":\"5439\",\"dbname\":\"carefirst_dev_db\"}"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-secret/Resource"
+   }
+  },
+  "carefirstdevsubnetgroup": {
+   "Type": "AWS::Redshift::ClusterSubnetGroup",
+   "Properties": {
+    "Description": "Redshift subnet group",
+    "SubnetIds": [
+     {
+      "Ref": "carefirstdevvpcPrivateASubnet1Subnet994B50D7"
+     },
+     {
+      "Ref": "carefirstdevvpcPrivateASubnet2Subnet5A3C2731"
+     },
+     {
+      "Ref": "carefirstdevvpcPrivateBSubnet1Subnet41F3B77D"
+     },
+     {
+      "Ref": "carefirstdevvpcPrivateBSubnet2SubnetDBA4AB36"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "carefirst-dev-subnet-group"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-subnet-group"
+   }
+  },
+  "carefirstdevcluster": {
+   "Type": "AWS::Redshift::Cluster",
+   "Properties": {
+    "ClusterIdentifier": "carefirst-dev-cluster",
+    "ClusterSubnetGroupName": {
+     "Ref": "carefirstdevsubnetgroup"
+    },
+    "ClusterType": "multi-node",
+    "DBName": "carefirst_dev_db",
+    "IamRoles": [
+     {
+      "Fn::GetAtt": [
+       "carefirstdevroleEE2F6C8D",
+       "Arn"
+      ]
+     }
+    ],
+    "MasterUserPassword": "YourStrongPassword123!",
+    "MasterUsername": "admin",
+    "NodeType": "ra3.large",
+    "NumberOfNodes": 2,
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "carefirstdevsg611885DA",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/carefirst-dev-cluster"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/+1W32vbMBD+W6rHonpdCmXkzfGgBLYlJKEPC2HI8iVRI0uedErmGf/vQ5adHy0MBhn4oU+2vrv79N1JnG4QDe4/Rfc37GDveLa7kyKNqjkyvqPsYH9UwAdR9VzwZUVEEWeZAWvBkiG5JZTk7Ff8u1sohk8M4cDKDrEuVYCJVmuxcYah0IoMlxVRLIcLl0VZeGDqUik4oYSLzHxldtc41fSqEUbsGcI1Qlb1iiZr9TxNaNAxb6KWFWF7JiRLhRRYfteqY90XfJy1/55qJDXfHUtZBJJxMVFfmFN8S4ZoHFAiiv1j8sqdWSs2alzsH9szmajEQFviNp9eqOiNkH6o6I2QfqjojZB+qAgNJbQR/zfTDmHBUgkn/ITF1mouGoKjM22b1dVb0ZpJ24Pyvst4l/Eu43/LaNrQWCEYBd1Q14467SpGZHybg0I6B+6MwPLJaFcsK6+020dKfYilnDhMtVNZ1x0zsNyI4jLtLBurjRczcxKaMZEzNVZSKAhIiOVaKeA+tJsynRI/HbTFad6UBr4l7Xx2oa+mguVRNdMSfHO01uWQjUoyrEhhhOKiYDLmXDuFp2K5HHxAzM8Uk5wptoFsqqXgwk/Ey+oCK2Nzyu4fDau2Igs97UQFD79La20OINTnaGuS/qtxFV4KCTTgHj0GLLS3vOF5C2fZHBmCP37bSmqIA2dN7UNUjRzfhRfIof4MEhAm6QtwHxGOMm08vp2mbgO53p9S9fcEjS7b+xgIafi06quW5OzanttraoEbQBvKbKJq3qyXFQmGs80DECQ+M+ngjDNE1dRAZrdijVGVrFUinUUw4aVtLhc9oXVNZ2C1MxyastHEWdT5OUYDvlYd+MpnavReZGBGzAKNrQWcI9sItfExE4eFw5pOS9xq9eEh+jiIHm5erBB3xikUOUSz8P0DkBuBzOENAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "carefirst-dev-us-east-1-redshift/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "carefirstdevbucketname": {
+   "Value": {
+    "Ref": "carefirstdevsalesbucket452FFB1A"
+   }
+  },
+  "carefirstdevsecretarn": {
+   "Value": {
+    "Ref": "carefirstdevsecret03D91C0F"
+   }
+  },
+  "carefirstdevclusterid": {
+   "Value": "carefirst-dev-cluster"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
