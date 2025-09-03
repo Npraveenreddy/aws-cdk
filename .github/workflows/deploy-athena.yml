@@ -66,26 +66,22 @@ jobs:
         run: npm install -g aws-cdk@latest
 
 
-      # ✅ Pre-checks
+      # 👇 Configure AWS creds from secrets
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
       - name: CDK Synth
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          cdk synth \
-          -c tenant=${{ github.event.inputs.tenant }} \
-          -c env=${{ github.event.inputs.env }}
+        working-directory: athena
+        run: cdk synth -c tenant=${{ github.event.inputs.tenant }} -c env=${{ github.event.inputs.env }}
 
       - name: CDK Diff
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          cdk diff \
-          -c tenant=${{ github.event.inputs.tenant }} \
-          -c env=${{ github.event.inputs.env }}
+        working-directory: athena
+        run: cdk diff -c tenant=${{ github.event.inputs.tenant }} -c env=${{ github.event.inputs.env }}
 
-      # 🚀 Deploy
-      - name: Deploy CDK Stack
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          cdk deploy \
-          -c tenant=${{ github.event.inputs.tenant }} \
-          -c env=${{ github.event.inputs.env }} \
-          --require-approval never
+      - name: CDK Deploy
+        working-directory: athena
+        run: cdk deploy -c tenant=${{ github.event.inputs.tenant }} -c env=${{ github.event.inputs.env }} --require-approval never
