@@ -34,7 +34,7 @@ jobs:
           pip install -r requirements.txt
           pip install pyyaml
 
-      # ✅ Validate tenant/env exist
+      #  Validate tenant/env exist
       - name: Validate config.yaml
         working-directory: ${{ env.WORKING_DIR }}
         run: |
@@ -45,16 +45,16 @@ jobs:
           with open("config.yaml") as f:
               config = yaml.safe_load(f)
           if tenant not in config:
-              sys.exit(f"❌ Tenant '{tenant}' not found in config.yaml")
+              sys.exit(f" Tenant '{tenant}' not found in config.yaml")
           if env not in config[tenant]:
-              sys.exit(f"❌ Env '{env}' not found under tenant '{tenant}' in config.yaml")
-          print(f"✅ Tenant '{tenant}', Env '{env}' validated in config.yaml")
+              sys.exit(f" Env '{env}' not found under tenant '{tenant}' in config.yaml")
+          print(f" Tenant '{tenant}', Env '{env}' validated in config.yaml")
           EOF
 
       - name: Install CDK CLI
         run: npm install -g aws-cdk@latest
 
-      # 👇 Configure AWS creds
+      #  Configure AWS creds
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -62,7 +62,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # 🚀 Destroy
+      #  Destroy
       - name: CDK Destroy
         working-directory: ${{ env.WORKING_DIR }}
         run: |
