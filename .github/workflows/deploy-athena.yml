@@ -63,7 +63,8 @@ jobs:
           echo "cdk_version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Install CDK CLI
-        run: npm install -g aws-cdk@${{ steps.detect_cdk.outputs.cdk_version }}
+        run: npm install -g aws-cdk@latest
+
 
       # ✅ Pre-checks
       - name: CDK Synth
