@@ -1,0 +1,35 @@
+carefirst:
+  account_id: "375299851423"
+  region: "us-east-1"
+  tags:
+    TenantName: carefirst
+    Environment: dev
+    DataClass: confidential
+    Owner: DevOps
+  s3_bucket_suffix: "-dev"
+
+  redshift:
+    cluster_identifier: "carefirst-dev-cluster"
+    cluster_type: "multi-node"
+    node_type: "ra3.large"
+    number_of_nodes: 2
+    master_username: "admin"
+    database_name: "carefirst_dev_db"
+    secret_name: "carefirst-dev-redshift-secret"
+
+  vpc:
+    cidr: "10.10.0.0/16"
+    max_azs: 2
+    subnets:
+      - name: "PublicSubnetA"
+        cidr_mask: 24
+        type: "PUBLIC"
+      - name: "PublicSubnetB"
+        cidr_mask: 24
+        type: "PUBLIC"
+      - name: "PrivateSubnetA"
+        cidr_mask: 24
+        type: "PRIVATE_WITH_EGRESS"
+      - name: "PrivateSubnetB"
+        cidr_mask: 24
+        type: "PRIVATE_WITH_EGRESS"
