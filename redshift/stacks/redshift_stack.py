@@ -1,3 +1,4 @@
+import json
 from aws_cdk import (
     Stack,
     SecretValue,
@@ -49,16 +50,23 @@ class RedshiftStack(Stack):
             description="Allow Redshift access"
         )
 
-        # IAM Role
+        # IAM Role with JSON policy
         redshift_role = iam.Role(
             self,
             f"{prefix}-role",
-            assumed_by=iam.ServicePrincipal("redshift.amazonaws.com"),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonRedshiftAllCommandsFullAccess"),
-                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3ReadOnlyAccess"),
-                iam.ManagedPolicy.from_aws_managed_policy_name("SecretsManagerReadWrite")
-            ]
+            assumed_by=iam.ServicePrincipal("redshift.amazonaws.com")
+        )
+
+        # Load JSON policy
+        with open("policies/redshift_policy.json") as f:
+            policy_json = json.load(f)
+
+        iam.Policy(
+            self,
+            f"{prefix}-policy",
+            policy_name=f"{prefix}-inline-policy",
+            statements=[iam.PolicyStatement.from_json(stmt) for stmt in policy_json["Statement"]],
+            roles=[redshift_role]
         )
 
         # S3 Bucket
@@ -115,4 +123,3 @@ class RedshiftStack(Stack):
         CfnOutput(self, f"{prefix}-bucket-name", value=sales_bucket.bucket_name)
         CfnOutput(self, f"{prefix}-secret-arn", value=redshift_secret.secret_arn)
         CfnOutput(self, f"{prefix}-cluster-id", value=redshift_cluster.cluster_identifier)
-
