@@ -20,40 +20,29 @@ jobs:
       PYTHON_VERSION: 3.11
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
       - name: Install Python dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          python -m pip install --upgrade pip
+          # Ensure PyYAML is installed
           pip install -r requirements.txt
+          pip install PyYAML
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
-      #   # Validate tenant/env exist in athena/config.yaml
-      # - name: Validate config.yaml
-      #   working-directory: ${{ env.WORKING_DIR }}
-      #   run: |
-      #     pip install pyyaml
-      #     python - <<EOF
-      #     import yaml, sys
-      #     tenant = "${{ github.event.inputs.tenant }}"
-      #     env = "${{ github.event.inputs.env }}"
-      #     with open("config.yaml") as f:
-      #         config = yaml.safe_load(f)
-      #     if tenant not in config:
-      #         sys.exit(f" Tenant '{tenant}' not found in config.yaml")
-      #     if env not in config[tenant]:
-      #         sys.exit(f" Env '{env}' not found under tenant '{tenant}' in config.yaml")
-      #     print(f" Tenant '{tenant}', Env '{env}' validated in config.yaml")
-      #     EOF
+      - name: Verify PyYAML
+        working-directory: ${{ env.WORKING_DIR }}
+        run: python -c "import yaml; print('PyYAML installed successfully')"
 
-
-      #  Detect CDK version from requirements.txt
       - name: Detect CDK version
         id: detect_cdk
         working-directory: ${{ env.WORKING_DIR }}
@@ -65,8 +54,6 @@ jobs:
       - name: Install CDK CLI
         run: npm install -g aws-cdk@latest
 
-
-      #  Configure AWS creds from secrets
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -75,13 +62,13 @@ jobs:
           aws-region: us-east-1
 
       - name: CDK Synth
-        working-directory: athena
+        working-directory: ${{ env.WORKING_DIR }}
         run: cdk synth -c tenant=${{ github.event.inputs.tenant }} -c env=${{ github.event.inputs.env }}
 
       - name: CDK Diff
-        working-directory: athena
+        working-directory: ${{ env.WORKING_DIR }}
         run: cdk diff -c tenant=${{ github.event.inputs.tenant }} -c env=${{ github.event.inputs.env }}
 
       - name: CDK Deploy
-        working-directory: athena
+        working-directory: ${{ env.WORKING_DIR }}
         run: cdk deploy -c tenant=${{ github.event.inputs.tenant }} -c env=${{ github.event.inputs.env }} --require-approval never
