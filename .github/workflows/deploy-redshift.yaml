@@ -8,7 +8,7 @@ on:
         required: true
         default: 'carefirst'
       env:
-        description: 'Environment name (dev/prod)'
+        description: 'Environment name'
         required: true
         default: 'dev'
 
@@ -52,16 +52,19 @@ jobs:
       - name: Install AWS CDK
         run: npm install -g aws-cdk
 
-      # 6. Deploy Redshift Stack
+      # 6. Debug tenant/env inputs
+      - name: Debug Inputs
+        run: |
+          echo "Tenant before sanitization: '${{ github.event.inputs.tenant }}'"
+          echo "Env before sanitization: '${{ github.event.inputs.env }}'"
+
+      # 7. Deploy Redshift Stack
       - name: Deploy Redshift
         working-directory: ./redshift
         run: |
-          cdk deploy \
-          -c tenant=${{ github.event.inputs.tenant }} \
-          -c env=${{ github.event.inputs.env }} \
-          --require-approval never
+          # Strip leading/trailing spaces
+          tenant=$(echo "${{ github.event.inputs.tenant }}" | xargs)
+          env=$(echo "${{ github.event.inputs.env }}" | xargs)
+          echo "Deploying stack for tenant='$tenant', env='$env'"
+          cdk deploy -c tenant="$tenant" -c env="$env" --require-approval never
 
-      # 7. Output stack info (optional)
-      - name: List CDK Outputs
-        working-directory: ./redshift
-        run: cdk list
