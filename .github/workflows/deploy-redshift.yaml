@@ -1,54 +1,57 @@
 name: Deploy Redshift CDK
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
-    inputs:
-      tenant:
-        description: 'Tenant name'
-        required: true
-        default: 'carefirst'
-      env:
-        description: 'Environment (dev/prod)'
-        required: true
-        default: 'dev'
 
 jobs:
-  deploy-redshift:
+  deploy:
+    name: Deploy Redshift Stack
     runs-on: ubuntu-latest
 
+    env:
+      AWS_REGION: us-east-1
+      CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }}
+      CDK_DEFAULT_REGION: us-east-1
+
     steps:
-      # 1. Checkout repo
-      - name: Checkout code
+      # 1. Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # 2. Set up Python
+      # 2. Setup Python
       - name: Set up Python 3.12
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
 
-      # 3. Install dependencies inside redshift folder
-      - name: Install dependencies
+      # 3. Install Python dependencies from redshift folder
+      - name: Install Python dependencies
         working-directory: ./redshift
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. Set up Node.js for CDK
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      # 4. Setup AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          node-version: '20'
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      # 5. Install AWS CDK CLI
-      - name: Install CDK CLI
+      # 5. Install CDK CLI
+      - name: Install AWS CDK
         run: npm install -g aws-cdk
 
-      # 6. Deploy Redshift stack
-      - name: Deploy Redshift CDK
+      # 7. Deploy Redshift Stack
+      - name: Deploy Redshift
         working-directory: ./redshift
-        run: cdk deploy -c tenant=${{ github.event.inputs.tenant }} -c env=${{ github.event.inputs.env }} --require-approval never
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
+        run: cdk deploy -c tenant=carefirst -c env=dev --require-approval never
+
+      # 8. Output stack info (optional)
+      - name: List CDK Outputs
+        working-directory: ./redshift
+        run: cdk list
