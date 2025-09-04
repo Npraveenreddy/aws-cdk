@@ -1,0 +1,60 @@
+name: Destroy Redshift CDK
+
+on:
+  workflow_dispatch:
+    inputs:
+      tenant:
+        description: "Tenant name (must exist in config.yaml)"
+        required: true
+        type: string
+      env:
+        description: "Environment (e.g., dev, prod)"
+        required: true
+        type: string
+
+jobs:
+  destroy-redshift:
+    runs-on: ubuntu-latest
+    env:
+      WORKING_DIR: redshift
+      PYTHON_VERSION: 3.11
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install Python dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          pip install -r requirements.txt
+          pip install PyYAML
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+
+      - name: Verify PyYAML
+        working-directory: ${{ env.WORKING_DIR }}
+        run: python -c "import yaml; print('PyYAML installed successfully')"
+
+      - name: Install CDK CLI
+        run: npm install -g aws-cdk@latest
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: CDK Destroy
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          cdk destroy -c tenant=${{ github.event.inputs.tenant }} \
+                      -c env=${{ github.event.inputs.env }} \
+                      --force
