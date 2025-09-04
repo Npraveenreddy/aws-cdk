@@ -6,46 +6,49 @@ on:
       tenant:
         description: 'Tenant name'
         required: true
-        default: carefirst
+        default: 'carefirst'
       env:
-        description: 'Environment name (dev/prod)'
+        description: 'Environment (dev/prod)'
         required: true
-        default: dev
+        default: 'dev'
 
 jobs:
   deploy-redshift:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      # 1. Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.12"
+      # 2. Set up Python
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        npm install -g aws-cdk
+      # 3. Install dependencies inside redshift folder
+      - name: Install dependencies
+        working-directory: ./redshift
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        role-to-assume: arn:aws:iam::375299851423:role/your-github-actions-deploy-role
-        aws-region: us-east-1
+      # 4. Set up Node.js for CDK
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-    - name: Export environment variables
-      run: |
-        echo "TENANT=${{ github.event.inputs.tenant }}" >> $GITHUB_ENV
-        echo "ENV_NAME=${{ github.event.inputs.env }}" >> $GITHUB_ENV
+      # 5. Install AWS CDK CLI
+      - name: Install CDK CLI
+        run: npm install -g aws-cdk
 
-    - name: Bootstrap CDK (if needed)
-      run: |
-        cdk bootstrap aws://$AWS_ACCOUNT_ID/$AWS_REGION
-
-    - name: Deploy Redshift stack
-      run: |
-        cdk deploy -c tenant=$TENANT -c env=$ENV_NAME --require-approval never
+      # 6. Deploy Redshift stack
+      - name: Deploy Redshift CDK
+        working-directory: ./redshift
+        run: cdk deploy -c tenant=${{ github.event.inputs.tenant }} -c env=${{ github.event.inputs.env }} --require-approval never
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
