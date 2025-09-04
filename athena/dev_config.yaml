@@ -1,0 +1,19 @@
+carefirst:
+  account_id: "375299851423"
+  region: "us-east-1"
+  tags:
+    Environment: dev
+    Owner: carefirst-dev-team
+  s3_bucket_suffix: "-dev"
+  glue_database: carefirst_dev_db
+  athena_workgroup: carefirst_dev_workgroup
+
+anotherclient:
+  account_id: "444444444444"
+  region: "us-east-1"
+  tags:
+    Environment: dev
+    Owner: another-dev-team
+  s3_bucket_suffix: "-dev"
+  glue_database: another_dev_db
+  athena_workgroup: another_dev_workgroup
