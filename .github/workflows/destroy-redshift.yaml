@@ -4,57 +4,64 @@ on:
   workflow_dispatch:
     inputs:
       tenant:
-        description: "Tenant name (must exist in config.yaml)"
+        description: 'Tenant name'
         required: true
-        type: string
+        default: 'carefirst'
       env:
-        description: "Environment (e.g., dev, prod)"
+        description: 'Environment name (dev/prod)'
         required: true
-        type: string
+        default: 'dev'
 
 jobs:
-  destroy-redshift:
+  destroy:
+    name: Destroy Redshift Stack
     runs-on: ubuntu-latest
+
     env:
-      WORKING_DIR: redshift
-      PYTHON_VERSION: 3.11
+      AWS_REGION: us-east-1
+      CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }}
+      CDK_DEFAULT_REGION: us-east-1
 
     steps:
-      - name: Checkout repository
+      # 1. Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Python
+      # 2. Setup Python
+      - name: Set up Python 3.12
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: 3.12
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
-
+      # 3. Install Python dependencies from redshift folder
       - name: Install Python dependencies
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: ./redshift
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install PyYAML
-          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
-      - name: Verify PyYAML
-        working-directory: ${{ env.WORKING_DIR }}
-        run: python -c "import yaml; print('PyYAML installed successfully')"
-
-      - name: Install CDK CLI
-        run: npm install -g aws-cdk@latest
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      # 4. Setup AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: CDK Destroy
-        working-directory: ${{ env.WORKING_DIR }}
+      # 5. Install CDK CLI
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk
+
+      # 6. Destroy Redshift Stack
+      - name: Destroy Redshift
+        working-directory: ./redshift
         run: |
-          cdk destroy -c tenant=${{ github.event.inputs.tenant }} \
-                      -c env=${{ github.event.inputs.env }} \
-                      --force
+          cdk destroy \
+          -c tenant=${{ github.event.inputs.tenant }} \
+          -c env=${{ github.event.inputs.env }} \
+          --force
+
+      # 7. Confirm destruction (optional)
+      - name: List CDK Stacks
+        working-directory: ./redshift
+        run: cdk list
