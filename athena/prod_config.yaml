@@ -1,0 +1,19 @@
+carefirst:
+  account_id: "375299851423"
+  region: "us-east-1"
+  tags:
+    Environment: prod
+    Owner: carefirst-prod-team
+  s3_bucket_suffix: "-prod"
+  glue_database: carefirst_prod_db
+  athena_workgroup: carefirst_prod_workgroup
+
+anotherclient:
+  account_id: "444444444444"
+  region: "us-east-1"
+  tags:
+    Environment: prod
+    Owner: another-prod-team
+  s3_bucket_suffix: "-prod"
+  glue_database: another_prod_db
+  athena_workgroup: another_prod_workgroup
