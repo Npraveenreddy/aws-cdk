@@ -1,7 +1,6 @@
 import json
 from aws_cdk import (
     Stack,
-    SecretValue,
     RemovalPolicy,
     CfnOutput,
     aws_redshift as redshift,
@@ -18,7 +17,9 @@ class RedshiftStack(Stack):
 
         prefix = f"{config['tenant']}-{config['env']}"
 
+        # -----------------------------
         # VPC
+        # -----------------------------
         vpc_config = config["vpc"]
         vpc = ec2.Vpc(
             self,
@@ -36,7 +37,9 @@ class RedshiftStack(Stack):
             ]
         )
 
+        # -----------------------------
         # Security Group
+        # -----------------------------
         redshift_sg = ec2.SecurityGroup(
             self,
             f"{prefix}-sg",
@@ -50,7 +53,9 @@ class RedshiftStack(Stack):
             description="Allow Redshift access"
         )
 
+        # -----------------------------
         # IAM Role with JSON policy
+        # -----------------------------
         redshift_role = iam.Role(
             self,
             f"{prefix}-role",
@@ -69,7 +74,9 @@ class RedshiftStack(Stack):
             roles=[redshift_role]
         )
 
+        # -----------------------------
         # S3 Bucket
+        # -----------------------------
         sales_bucket = s3.Bucket(
             self,
             f"{prefix}-sales-bucket",
@@ -79,22 +86,28 @@ class RedshiftStack(Stack):
         )
         sales_bucket.grant_read(redshift_role)
 
-        # Secrets Manager
+        # -----------------------------
+        # Secrets Manager (dynamic password)
+        # -----------------------------
         redshift_secret = secretsmanager.Secret(
             self,
             f"{prefix}-secret",
             secret_name=config["redshift"]["secret_name"],
-            secret_object_value={
-                "username": SecretValue.unsafe_plain_text(config["redshift"]["master_username"]),
-                "password": SecretValue.unsafe_plain_text("YourStrongPassword123!"),
-                "engine": SecretValue.unsafe_plain_text("redshift"),
-                "host": SecretValue.unsafe_plain_text("placeholder-host"),
-                "port": SecretValue.unsafe_plain_text("5439"),
-                "dbname": SecretValue.unsafe_plain_text(config["redshift"]["database_name"])
-            }
+            generate_secret_string=secretsmanager.SecretStringGenerator(
+                secret_string_template=json.dumps({
+                    "username": config["redshift"]["master_username"]
+                }),
+                generate_string_key="password",
+                exclude_characters='"@/\\',
+                password_length=16
+            )
         )
 
-        # Subnet Group
+        master_password = redshift_secret.secret_value_from_json("password").unsafe_unwrap()
+
+        # -----------------------------
+        # Subnet Group (required for CfnCluster)
+        # -----------------------------
         redshift_subnet_group = redshift.CfnClusterSubnetGroup(
             self,
             f"{prefix}-subnet-group",
@@ -103,7 +116,9 @@ class RedshiftStack(Stack):
             tags=[{"key": "Name", "value": f"{prefix}-subnet-group"}]
         )
 
+        # -----------------------------
         # Redshift Cluster
+        # -----------------------------
         redshift_cluster = redshift.CfnCluster(
             self,
             f"{prefix}-cluster",
@@ -112,14 +127,16 @@ class RedshiftStack(Stack):
             node_type=config["redshift"]["node_type"],
             number_of_nodes=config["redshift"]["number_of_nodes"],
             master_username=config["redshift"]["master_username"],
-            master_user_password="YourStrongPassword123!",
+            master_user_password=master_password,
             db_name=config["redshift"]["database_name"],
             iam_roles=[redshift_role.role_arn],
             vpc_security_group_ids=[redshift_sg.security_group_id],
             cluster_subnet_group_name=redshift_subnet_group.ref
         )
 
+        # -----------------------------
         # Outputs
+        # -----------------------------
         CfnOutput(self, f"{prefix}-bucket-name", value=sales_bucket.bucket_name)
         CfnOutput(self, f"{prefix}-secret-arn", value=redshift_secret.secret_arn)
         CfnOutput(self, f"{prefix}-cluster-id", value=redshift_cluster.cluster_identifier)
