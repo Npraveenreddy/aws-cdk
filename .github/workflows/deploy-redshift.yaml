@@ -4,70 +4,48 @@ on:
   workflow_dispatch:
     inputs:
       tenant:
-        description: "Tenant name (must exist in config.yaml)"
+        description: 'Tenant name'
         required: true
-        type: string
+        default: carefirst
       env:
-        description: "Environment (e.g., dev, prod)"
+        description: 'Environment name (dev/prod)'
         required: true
-        type: string
+        default: dev
 
 jobs:
   deploy-redshift:
     runs-on: ubuntu-latest
-    env:
-      WORKING_DIR: redshift
-      PYTHON_VERSION: 3.11
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        npm install -g aws-cdk
 
-      - name: Install Python dependencies
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          pip install -r requirements.txt
-          pip install PyYAML
-          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: arn:aws:iam::375299851423:role/your-github-actions-deploy-role
+        aws-region: us-east-1
 
-      - name: Verify PyYAML
-        working-directory: ${{ env.WORKING_DIR }}
-        run: python -c "import yaml; print('PyYAML installed successfully')"
+    - name: Export environment variables
+      run: |
+        echo "TENANT=${{ github.event.inputs.tenant }}" >> $GITHUB_ENV
+        echo "ENV_NAME=${{ github.event.inputs.env }}" >> $GITHUB_ENV
 
-      - name: Detect CDK version
-        id: detect_cdk
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          VERSION=$(grep -E '^aws-cdk-lib' requirements.txt | cut -d'=' -f3)
-          echo "Detected aws-cdk-lib version: $VERSION"
-          echo "cdk_version=$VERSION" >> $GITHUB_OUTPUT
+    - name: Bootstrap CDK (if needed)
+      run: |
+        cdk bootstrap aws://$AWS_ACCOUNT_ID/$AWS_REGION
 
-      - name: Install CDK CLI
-        run: npm install -g aws-cdk@latest
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: CDK Synth
-        working-directory: ${{ env.WORKING_DIR }}
-        run: cdk synth -c tenant=${{ github.event.inputs.tenant }} -c env=${{ github.event.inputs.env }}
-
-      - name: CDK Diff
-        working-directory: ${{ env.WORKING_DIR }}
-        run: cdk diff -c tenant=${{ github.event.inputs.tenant }} -c env=${{ github.event.inputs.env }}
-
-      - name: CDK Deploy
-        working-directory: ${{ env.WORKING_DIR }}
-        run: cdk deploy -c tenant=${{ github.event.inputs.tenant }} -c env=${{ github.event.inputs.env }} --require-approval never
+    - name: Deploy Redshift stack
+      run: |
+        cdk deploy -c tenant=$TENANT -c env=$ENV_NAME --require-approval never
