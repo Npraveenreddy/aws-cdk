@@ -33,7 +33,7 @@ jobs:
         with:
           python-version: 3.12
 
-      # 3. Install Python dependencies from redshift folder
+      # 3. Install Python dependencies
       - name: Install Python dependencies
         working-directory: ./redshift
         run: |
@@ -57,11 +57,7 @@ jobs:
         working-directory: ./redshift
         run: |
           cdk destroy \
-          -c tenant=${{ github.event.inputs.tenant }} \
-          -c env=${{ github.event.inputs.env }} \
-          --force
-
-      # 7. Confirm destruction (optional)
-      - name: List CDK Stacks
-        working-directory: ./redshift
-        run: cdk list
+            -c tenant=${{ github.event.inputs.tenant }} \
+            -c env=${{ github.event.inputs.env }} \
+            --force \
+            --require-approval never
