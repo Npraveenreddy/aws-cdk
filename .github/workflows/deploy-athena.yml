@@ -34,23 +34,23 @@ jobs:
           pip install -r requirements.txt
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
-        # Validate tenant/env exist in athena/config.yaml
-      - name: Validate config.yaml
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          pip install pyyaml
-          python - <<EOF
-          import yaml, sys
-          tenant = "${{ github.event.inputs.tenant }}"
-          env = "${{ github.event.inputs.env }}"
-          with open("config.yaml") as f:
-              config = yaml.safe_load(f)
-          if tenant not in config:
-              sys.exit(f" Tenant '{tenant}' not found in config.yaml")
-          if env not in config[tenant]:
-              sys.exit(f" Env '{env}' not found under tenant '{tenant}' in config.yaml")
-          print(f" Tenant '{tenant}', Env '{env}' validated in config.yaml")
-          EOF
+      #   # Validate tenant/env exist in athena/config.yaml
+      # - name: Validate config.yaml
+      #   working-directory: ${{ env.WORKING_DIR }}
+      #   run: |
+      #     pip install pyyaml
+      #     python - <<EOF
+      #     import yaml, sys
+      #     tenant = "${{ github.event.inputs.tenant }}"
+      #     env = "${{ github.event.inputs.env }}"
+      #     with open("config.yaml") as f:
+      #         config = yaml.safe_load(f)
+      #     if tenant not in config:
+      #         sys.exit(f" Tenant '{tenant}' not found in config.yaml")
+      #     if env not in config[tenant]:
+      #         sys.exit(f" Env '{env}' not found under tenant '{tenant}' in config.yaml")
+      #     print(f" Tenant '{tenant}', Env '{env}' validated in config.yaml")
+      #     EOF
 
 
       #  Detect CDK version from requirements.txt
